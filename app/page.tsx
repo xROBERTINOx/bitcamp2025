@@ -23,7 +23,13 @@ export default function LawyerHomePage() {
         >
           Small Court Claims Preparation
         </Link>
+        <Link
+          href="/rentingdocs"
+          className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out"
+        >
+          Landlord-Tenant Rights Explainer
+        </Link>
       </div>
     </div>
   );
-}
+}    
