@@ -17,6 +17,12 @@ export default function LawyerHomePage() {
         >
           Terms of Service Simplifier
         </Link>
+        <Link
+          href="/smallcourtclaims"
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out"
+        >
+          Small Court Claims Preparation
+        </Link>
       </div>
     </div>
   );

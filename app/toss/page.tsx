@@ -13,11 +13,12 @@ export default function TossPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uiMode, setUiMode] = useState<'summarize' | 'ask'>('summarize'); // State for UI mode
+  
   const [questionText, setQuestionText] = useState(''); // State for question input
-  // Add states for question handling later if needed:
-  // const [isAsking, setIsAsking] = useState(false);
-  // const [answer, setAnswer] = useState('');
-  // const [questionError, setQuestionError] = useState<string | null>(null);
+  const [questionDisplayText, setQuestionDisplayText] = useState(''); // State for question display]
+  const [answer, setAnswer] = useState('');
+  const [isAsking, setIsAsking] = useState(false);
+  const [questionError, setQuestionError] = useState<string | null>(null);
 
   const handleSummarize = async () => {
     if (!inputText.trim()) {
@@ -93,8 +94,79 @@ export default function TossPage() {
   // Placeholder for question submission logic
   const handleAskQuestion = async () => {
     console.log("Submitting question:", questionText);
+    setQuestionDisplayText(questionText);
     // Implement API call to answer question based on inputText and questionText here
-    alert("Question submission functionality not yet implemented.");
+    // alert("Question submission functionality not yet implemented.");
+
+    if (!questionText.trim()) {
+        setQuestionError("Please put your question first");
+        return;
+    }
+
+    if (!API_KEY) {
+        setQuestionError("API Key not found.");
+        return;
+    }
+
+    setQuestionError(null);
+    setAnswer('');
+
+    try {
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+  
+        const generationConfig = {
+          temperature: 0.7, // Adjust for creativity vs. factuality
+          topK: 1,
+          topP: 1,
+          maxOutputTokens: 512, // Adjust based on desired summary length
+        };
+  
+        // Optional: Safety settings configuration
+        const safetySettings = [
+          { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+          { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+          { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+          { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+        ];
+  
+        const parts = [
+            { text: summary },
+            { text: `given the summary, answer the following question: ${questionText}` },
+        ];
+  
+        const result = await model.generateContent({
+          contents: [{ role: "user", parts }],
+          generationConfig,
+          safetySettings,
+        });
+  
+         if (result.response) {
+           // Check if the response was blocked
+           if (result.response.promptFeedback?.blockReason) {
+             setQuestionError(`Request blocked due to: ${result.response.promptFeedback.blockReason}. Please check the input text.`);
+             console.warn("Prompt Feedback:", result.response.promptFeedback);
+             // Keep uiMode as 'summarize' on error
+           } else {
+             const responseText = result.response.text(); // Use .text() for Gemini 1.5 Flash
+             setAnswer(responseText);
+            //  setUiMode('ask'); // <<< Change UI mode on successful summary
+           }
+         } else {
+           // Handle cases where the response might be missing entirely
+           console.error("Gemini API call succeeded but no response object was found.", result);
+           setQuestionError("Failed to generate summary. An unknown error occurred with the API response.");
+           // Keep uiMode as 'summarize' on error
+         }
+  
+      } catch (e) {
+        console.error("Error calling Gemini API:", e);
+        setQuestionError(`An error occurred: ${e instanceof Error ? e.message : String(e)}`);
+        // Keep uiMode as 'summarize' on error
+      } finally {
+        // setIsLoading(false);
+      }
+    
   };
 
 
@@ -198,13 +270,29 @@ export default function TossPage() {
                  opacity: /*isAsking ||*/ !questionText.trim() ? 0.6 : 1, // Adjust opacity based on state
              }}
            >
-             {/* {isAsking ? 'Asking...' : 'Submit Question'} */}
              Submit Question
            </button>
-           {/* Placeholder for displaying the answer */}
-           {/* {answer && <div style={{marginTop: '1rem', ...}}> {answer} </div>} */}
-           {/* Placeholder for displaying question errors */}
-           {/* {questionError && <div style={{color: 'red', ...}}> {questionError} </div>} */}
+           {answer && !isAsking && (
+            <div style={{
+                marginTop: '2rem',
+                border: '1px solid #333',
+                padding: '1.5rem',
+                borderRadius: '8px',
+                backgroundColor: '#1a1a1a',
+                color: '#f0f0f0',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                lineHeight: '1.7'
+            }}>
+                <h2 style={{ color: '#ffffff', borderBottom: '1px solid #444', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Question: {questionDisplayText} <br></br>Answer:</h2>
+                <ReactMarkdown
+                    components={{
+                    // a: ({node, ...props}) => <a style={{ color: '#61dafb' }} {...props} />
+                }}
+            >
+                    {answer}
+                </ReactMarkdown>
+            </div>
+           )}
         </div>
       )}
 
