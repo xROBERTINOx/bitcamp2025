@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import ReactMarkdown from 'react-markdown';
 
 
@@ -51,6 +51,7 @@ export default function SmallClaimsPage() {
     const handleProcessWalkthrough = async () => {
         if (!typeOfCase || !userState || !issueDescription || !claimAmount || !incidentYear || !incidentMonth || !incidentDay || !opposingPartyInfo || !evidence) {
         setError("Please enter all data.");
+        console.log(error)
         return;
     }
     if (!API_KEY) {

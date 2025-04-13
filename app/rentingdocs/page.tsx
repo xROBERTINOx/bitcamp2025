@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import ReactMarkdown from 'react-markdown';
 
 const MODEL_NAME = "gemini-1.5-flash";
@@ -228,6 +228,7 @@ export default function RentingDocsPage() {
                             if (userZipCode.toString().length === 5) {
                                 setError(null); // Clear error on success
                                 handleLocation();
+                                console.log(e);
                             } else {
                                 setError("Please enter a valid 5-digit zip code.");
                             }

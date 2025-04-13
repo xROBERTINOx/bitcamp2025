@@ -17,8 +17,7 @@ export default function TossPage() {
   const [questionText, setQuestionText] = useState(''); // State for question input
   const [questionDisplayText, setQuestionDisplayText] = useState(''); // State for question display]
   const [answer, setAnswer] = useState('');
-  const [isAsking, setIsAsking] = useState(false);
-  const [questionError, setQuestionError] = useState<string | null>(null);
+  
 
   const handleSummarize = async () => {
     if (!inputText.trim()) {
@@ -99,16 +98,15 @@ export default function TossPage() {
     // alert("Question submission functionality not yet implemented.");
 
     if (!questionText.trim()) {
-        setQuestionError("Please put your question first");
-        return;
+      console.log("1");  
+      return;
     }
 
     if (!API_KEY) {
-        setQuestionError("API Key not found.");
-        return;
+      console.log("1");   
+      return;
     }
 
-    setQuestionError(null);
     setAnswer('');
 
     try {
@@ -144,7 +142,7 @@ export default function TossPage() {
          if (result.response) {
            // Check if the response was blocked
            if (result.response.promptFeedback?.blockReason) {
-             setQuestionError(`Request blocked due to: ${result.response.promptFeedback.blockReason}. Please check the input text.`);
+             
              console.warn("Prompt Feedback:", result.response.promptFeedback);
              // Keep uiMode as 'summarize' on error
            } else {
@@ -155,13 +153,13 @@ export default function TossPage() {
          } else {
            // Handle cases where the response might be missing entirely
            console.error("Gemini API call succeeded but no response object was found.", result);
-           setQuestionError("Failed to generate summary. An unknown error occurred with the API response.");
+           
            // Keep uiMode as 'summarize' on error
          }
   
       } catch (e) {
         console.error("Error calling Gemini API:", e);
-        setQuestionError(`An error occurred: ${e instanceof Error ? e.message : String(e)}`);
+        
         // Keep uiMode as 'summarize' on error
       } finally {
         // setIsLoading(false);
@@ -177,7 +175,7 @@ export default function TossPage() {
       {/* Only show initial input section in 'summarize' mode */}
       {uiMode === 'summarize' && (
         <>
-          <p>Paste the Terms of Service (ToS) below and click "Summarize" to get a simplified overview using Gemini.</p>
+          <p>Paste the Terms of Service (ToS) below and click Summarize to get a simplified overview using Gemini.</p>
           <textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
@@ -272,7 +270,7 @@ export default function TossPage() {
            >
              Submit Question
            </button>
-           {answer && !isAsking && (
+           {answer && (
             <div style={{
                 marginTop: '2rem',
                 border: '1px solid #333',

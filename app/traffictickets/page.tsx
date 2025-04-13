@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import ReactMarkdown from 'react-markdown';
 
 const MODEL_NAME = "gemini-1.5-flash";
@@ -14,7 +14,6 @@ export default function TrafficTickets() {
     const [citationNumber, setCitationNumber] = useState('');
     const [county, setCounty] = useState('');
     const [details, setDetails] = useState('');
-    const [error, setError] = useState<string | null>(null);
     const [generalResponse, setGeneralResponse] = useState('');
     const [questionText, setQuestionText] = useState('');
     const [answer, setAnswer] = useState('');
@@ -23,12 +22,12 @@ export default function TrafficTickets() {
     
     const handleAskQuestion = async () => {
         if (!API_KEY) {
-            setError("API Key not found. Please check your environment variables (ensure it starts with NEXT_PUBLIC_).");
+            console.log("apikey");
             return;
         }
         
         setExtraQuestionStatus('loading');
-        setError(null);
+        
         
         try {
             const genAI = new GoogleGenerativeAI(API_KEY);
@@ -62,7 +61,6 @@ export default function TrafficTickets() {
     
             if (result.response) {
                 if (result.response.promptFeedback?.blockReason) {
-                    setError(`Request blocked due to: ${result.response.promptFeedback.blockReason}. Please check the input text.`);
                     console.warn("Prompt Feedback:", result.response.promptFeedback);
                 } else {
                     const responseText = result.response.text();
@@ -72,12 +70,12 @@ export default function TrafficTickets() {
                 }
             } else {
                 console.error("Gemini API call succeeded but no response object was found.", result);
-                setError("Failed to generate process walkthroug");
+                
             }
         
         } catch (e) {
             console.error("Error calling Gemini API:", e);
-            setError(`An error occurred: ${e instanceof Error ? e.message : String(e)}`);
+            
         } finally {
             // setIsLoading(false);
             // setUiMode('generalResponse');
@@ -87,13 +85,11 @@ export default function TrafficTickets() {
 
     const handleGeneralResponse = async () => {
         if (!API_KEY) {
-            setError("API Key not found. Please check your environment variables (ensure it starts with NEXT_PUBLIC_).");
+            console.log("apikey");
             return;
         }
 
         setUiMode('loading');
-
-        setError(null);
         
         try {
             const genAI = new GoogleGenerativeAI(API_KEY);
@@ -131,7 +127,6 @@ export default function TrafficTickets() {
     
             if (result.response) {
                 if (result.response.promptFeedback?.blockReason) {
-                    setError(`Request blocked due to: ${result.response.promptFeedback.blockReason}. Please check the input text.`);
                     console.warn("Prompt Feedback:", result.response.promptFeedback);
                 } else {
                     const responseText = result.response.text();
@@ -139,12 +134,10 @@ export default function TrafficTickets() {
                 }
             } else {
                 console.error("Gemini API call succeeded but no response object was found.", result);
-                setError("Failed to generate process walkthroug");
             }
         
         } catch (e) {
             console.error("Error calling Gemini API:", e);
-            setError(`An error occurred: ${e instanceof Error ? e.message : String(e)}`);
         } finally {
             // setIsLoading(false);
             setUiMode('generalResponse');
@@ -244,7 +237,7 @@ export default function TrafficTickets() {
 
             {uiMode === 'generalResponse' && (
                 <>
-                <p>Here's what you need to know</p>
+                <p>Here is what you need to know</p>
                 <ReactMarkdown>
                     {generalResponse}
                 </ReactMarkdown>
