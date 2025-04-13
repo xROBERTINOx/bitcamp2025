@@ -5,7 +5,7 @@ export default function LawyerHomePage() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-8">
       <h1 className="text-4xl font-bold text-gray-800 mb-6">
-        AI Lawyer Assistant
+        subpoenAI.tech
       </h1>
       <p className="text-lg text-gray-700 mb-8 text-center">
         Your legal companion, powered by AI.
