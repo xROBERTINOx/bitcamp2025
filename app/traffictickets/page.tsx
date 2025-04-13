@@ -148,7 +148,7 @@ export default function TrafficTickets() {
 
     return (
         <div>
-            <h1>Traffic Tickets</h1>
+            <h1>Traffic Ticket Summarizer and Helper</h1>
             
             {uiMode=== 'citationNumber' && (
                 <>

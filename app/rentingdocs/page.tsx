@@ -176,6 +176,7 @@ export default function RentingDocsPage() {
 
     return (
         <div style={{ padding: '2rem', maxWidth: '800px', margin: 'auto' }}>
+            <p>Landlord-Tenant Rights Explainer</p>
             {uiMode === 'tenantOrLandlord' && (
                 <>
                     <p>Are you a tenant or a landlord?</p>
