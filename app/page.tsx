@@ -29,6 +29,12 @@ export default function LawyerHomePage() {
         >
           Landlord-Tenant Rights Explainer
         </Link>
+        <Link
+          href="/traffictickets"
+          className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-full transition duration-300 ease-in-out"
+        >
+          Traffic Ticket Summarizer
+        </Link>
       </div>
     </div>
   );
